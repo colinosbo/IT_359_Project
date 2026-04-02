@@ -7,7 +7,7 @@ import os
 from datetime import datetime
 
 # --- Configuration ---
-OPENWEBUI_BASE_URL = os.getenv("OPENWEBUI_URL", "http://localhost:3000")
+OPENWEBUI_BASE_URL = os.getenv("OPENWEBUI_URL", "http://sushi.it.ilstu.edu:8080/") #must be connected to ISU VPN
 OPENWEBUI_API_KEY  = os.getenv("OPENWEBUI_API_KEY", "")
 MODEL_NAME         = os.getenv("OPENWEBUI_MODEL", "llama3.2")
 
