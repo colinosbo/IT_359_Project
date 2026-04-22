@@ -1,1 +1,12 @@
+# Python dependencies - install with: pip install -r requirements.txt
 requests
+
+# External tool dependencies (not pip installable - must be installed separately)
+#
+# Nmap (required for --target mode)
+#   Windows: https://nmap.org/download.html
+#   Linux:   sudo apt install nmap
+#
+# Gobuster (required for web directory scanning)
+#   Windows: https://github.com/OJ/gobuster/releases
+#   Linux:   sudo apt install gobuster
