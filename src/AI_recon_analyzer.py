@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
-# recon_analyzer.py
+# AI_recon_analyzer.py
 
 import requests
 import sys
 import os
+import json
 from datetime import datetime
 
 # --- Configuration ---
-OPENWEBUI_BASE_URL = os.getenv("OPENWEBUI_URL", "http://sushi.it.ilstu.edu:8080") #must be connected to ISU VPN
+OPENWEBUI_BASE_URL = os.getenv("OPENWEBUI_URL", "http://sushi.it.ilstu.edu:8080")  # must be connected to ISU VPN
 OPENWEBUI_API_KEY  = os.getenv("OPENWEBUI_API_KEY", "")
 MODEL_NAME         = os.getenv("OPENWEBUI_MODEL", "llama3.2")
 
@@ -70,8 +71,6 @@ def read_findings(filepath: str) -> str:
 
 
 def analyze(findings: str, model: str) -> str:
-    import json
-
     headers = {
         "Authorization": f"Bearer {OPENWEBUI_API_KEY}",
         "Content-Type": "application/json"
@@ -125,15 +124,37 @@ def save_report(content: str, input_filepath: str) -> str:
 
 
 def main():
-    if len(sys.argv) != 2:
-        print("Usage: python recon_analyzer.py <findings_file>")
+    # --- Argument Parsing ---
+    # Mode 1: python3 AI_recon_analyzer.py scan_results.txt
+    # Mode 2: python3 AI_recon_analyzer.py --target 192.168.1.1
+
+    if len(sys.argv) < 2:
+        print("Usage:")
+        print("  python3 AI_recon_analyzer.py <findings_file>")
+        print("  python3 AI_recon_analyzer.py --target <ip_or_hostname>")
         sys.exit(1)
 
-    filepath = sys.argv[1]
+    if sys.argv[1] == "--target":
+        # Automated mode: run Nmap then analyze
+        if len(sys.argv) < 3:
+            print("[-] Please provide a target after --target.")
+            print("    Example: python3 AI_recon_analyzer.py --target 192.168.1.1")
+            sys.exit(1)
 
-    if not os.path.exists(filepath):
-        print(f"[-] File not found: {filepath}")
-        sys.exit(1)
+        target = sys.argv[2]
+
+        # Import here so manual mode works even if nmap_scanner has an issue
+        from nmap_scanner import run_nmap_scan, save_scan_output
+
+        scan_output = run_nmap_scan(target)
+        filepath = save_scan_output(scan_output, target)
+
+    else:
+        # Manual mode: use existing findings file
+        filepath = sys.argv[1]
+        if not os.path.exists(filepath):
+            print(f"[-] File not found: {filepath}")
+            sys.exit(1)
 
     model = select_model()
 
@@ -145,7 +166,7 @@ def main():
 
     output_path = save_report(report, filepath)
     print(f"[+] Report saved to: {output_path}")
-    print("\n" + "="*60 + "\n")
+    print("\n" + "=" * 60 + "\n")
     print(report)
 
 
