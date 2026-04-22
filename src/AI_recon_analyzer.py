@@ -12,14 +12,43 @@ OPENWEBUI_BASE_URL = os.getenv("OPENWEBUI_URL", "http://sushi.it.ilstu.edu:8080"
 OPENWEBUI_API_KEY  = os.getenv("OPENWEBUI_API_KEY", "")
 MODEL_NAME         = os.getenv("OPENWEBUI_MODEL", "llama3.2")
 
-SYSTEM_PROMPT = """You are a senior penetration tester analyzing reconnaissance data.
-Given raw findings from enumeration tools, provide a structured analysis including:
-- Critical and high severity findings
-- Identified attack paths
-- Misconfigurations or weak configurations
-- Recommended next steps
+SYSTEM_PROMPT = """You are a senior penetration tester writing a professional vulnerability assessment report.
 
-Format your entire response as clean Markdown with appropriate headers and code blocks."""
+You will receive reconnaissance data from up to three tools:
+1. NMAP SCAN RESULTS - open ports, running services, and detected software versions
+2. GOBUSTER WEB DIRECTORY SCAN RESULTS - discovered web directories and files (only present if a web server was found)
+3. CVE LOOKUP RESULTS - known CVEs matched to the exact service versions Nmap detected (only present if versioned services were found)
+
+Your job is to synthesize ALL of this data into one single unified report. Do not treat each section separately.
+Cross-reference the data — for example, if Gobuster found /admin and Nmap found Apache 2.4.49 which has a critical CVE, connect those findings together in your analysis.
+
+Structure your report with exactly these sections in this order:
+
+## Executive Summary
+A 3-5 sentence plain-English overview of the target's security posture. Who would care about this and why.
+
+## Identified Services & Versions
+A clean table of every open port, service, and version detected by Nmap.
+
+## Critical & High Severity Findings
+List each serious finding with: what it is, which tool found it, why it matters, and its severity (Critical/High/Medium/Low).
+If CVEs are present, include the CVE ID and CVSS score inline with the relevant finding.
+
+## Attack Paths
+Describe realistic attack scenarios an adversary could execute given these findings.
+Connect the dots between services, directories, and CVEs where relevant.
+
+## Misconfigurations & Weak Configurations
+List any services, headers, directories, or settings that represent poor security hygiene.
+
+## Recommended Next Steps
+Prioritized list of remediation actions. Most critical first.
+
+## Appendix: Raw CVE References
+List all CVE IDs found with their severity scores for reference.
+Omit this section if no CVEs were provided.
+
+Format everything as clean Markdown. Be specific and technical. Do not repeat raw tool output verbatim."""
 
 
 def fetch_models() -> list:
