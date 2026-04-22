@@ -146,6 +146,7 @@ def main():
         # Import here so manual mode works even if nmap_scanner has an issue
         from nmap_scanner import run_nmap_scan, save_scan_output
         from gobuster_scanner import run_gobuster_if_applicable
+        from cve_lookup import run_cve_lookup
 
         # Step 1: Run Nmap
         nmap_output = run_nmap_scan(target)
@@ -154,12 +155,17 @@ def main():
         # Step 2: Run Gobuster only if port 80 or 443 is open
         gobuster_output = run_gobuster_if_applicable(target, nmap_output)
 
-        # Step 3: Combine findings into one string for the AI
+        # Step 3: Look up CVEs for detected service versions
+        cve_output = run_cve_lookup(nmap_output)
+
+        # Step 4: Combine all findings into one string for the AI
         combined_findings = f"=== NMAP SCAN RESULTS ===\n\n{nmap_output}"
         if gobuster_output:
             combined_findings += f"\n\n{gobuster_output}"
+        if cve_output:
+            combined_findings += f"\n\n{cve_output}"
 
-        # Step 4: Select model and send to AI
+        # Step 5: Select model and send to AI
         model = select_model()
         print(f"[*] Sending combined findings to AI ({model})...")
         report = analyze(combined_findings, model)
