@@ -1,6 +1,6 @@
 # AI Recon Analyzer
 
-> 🎥 **Video Demo:** [Watch on YouTube](https://www.youtube.com/watch?v=YOUR_VIDEO_ID_HERE)
+> 🎥 **Video Demo:** [Watch on YouTube] (https://youtu.be/icns233BEGU))
 
 A command-line tool that sends reconnaissance output (e.g., Nmap scans) to an AI model via OpenWebUI for automated penetration testing analysis. The tool fetches available models, lets the user select one, and generates a structured Markdown security report covering vulnerabilities, attack paths, misconfigurations, and remediation steps.
 
